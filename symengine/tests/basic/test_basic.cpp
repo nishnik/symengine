@@ -14,6 +14,8 @@
 #include <symengine/functions.h>
 #include <symengine/visitor.h>
 #include <symengine/eval_double.h>
+#include <symengine/sets.h> ///-->
+using SymEngine::Interval; ///->
 
 using SymEngine::Basic;
 using SymEngine::Add;
@@ -368,6 +370,11 @@ TEST_CASE("compare: Basic", "[basic]")
     CHECK(i2->compare(*i2) == 0);
     CHECK(i2->compare(*i3) == -1);
     CHECK(i3->compare(*i2) == 1);
+
+    Interval r3 ;
+    Interval(i2,integer(10)).interval_intersection(Interval(integer(5),integer(15)), r3);
+    std::cout<<"\n---->"<<Interval(i2,integer(10))<<" "<<Interval(integer(5),integer(15))<<" "<<r3;
+
 
     r1 = mul(x, y);
     r2 = mul(x, y);
