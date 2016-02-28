@@ -66,6 +66,7 @@ public:
         }
     }
 
+
     void bvisit(const Integer &x) {
         if (x.is_negative()) {
             precedence = PrecedenceEnum::Mul;
@@ -137,6 +138,7 @@ public:
     void bvisit(const URatPSeriesPiranha &x);
     void bvisit(const UPSeriesPiranha &x);
 #endif
+    void bvisit(const Interval &x);
     void bvisit(const Log &x);
     void bvisit(const Constant &x);
     void bvisit(const Function &x);

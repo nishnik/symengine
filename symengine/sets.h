@@ -8,58 +8,59 @@
 
 #include <symengine/basic.h>
 #include <symengine/functions.h>
+#include <symengine/number.h>
+#include <symengine/integer.h>
+#include <symengine/rational.h>
 
 
 namespace SymEngine {
 
-class Interval {
-	private:
-		RCP<const Basic> start_, end_;
-		bool left_open_, right_open_;
+class Interval : public Basic  {
 	public:
+		mpq_class start_;
+		mpq_class end_;
+		bool left_open_, right_open_;
+	
+		IMPLEMENT_TYPEID(INTERVAL)
 		//! \return Size of the hash
-    	//virtual std::size_t __hash__() const;
+    	virtual std::size_t __hash__() const;
 
 	    /*! Equality comparator
 	     * \param o - Object to be compared with
 	     * \return whether the 2 objects are equal
 	     * */
-	    //virtual bool __eq__(const Basic &o) const;
-	    //virtual int compare(const Basic &o) const;
+	    virtual bool __eq__(const Basic &o) const;
+	    virtual int compare(const Basic &o) const;
+        virtual vec_basic get_args() const { return {}; }
 
-		Interval(const RCP<const Basic> &start, const RCP<const Basic> &end, bool left_open = false, bool right_open = false);
+
+		Interval(mpq_class real, mpq_class end, bool left_open = false, bool right_open = false);
 		
-		Interval();
+		static RCP<const Basic> from_mpq(const mpq_class start, const mpq_class end, const bool left_open = false, const bool right_open = false);
+    	
+    	static RCP<const Basic> from_nums(const Basic &start, const Basic &end,  const bool left_open = false, const bool right_open = false);
 
+		static RCP<const Basic> open(const Basic &interval);
+    	
+    	static RCP<const Basic> close(const Basic &interval);
+    	
+    	static RCP<const Basic> Lopen(const Basic &interval);
+    	
+    	static RCP<const Basic> Ropen(const Basic &interval);
+    	
 		std::string __str__() const;
 
-		bool is_canonical();
-
-		RCP<const Basic> get_start() const { return start_; }
-
-		RCP<const Basic> get_end() const { return end_; }
-
-		bool is_left_open() const { return left_open_; }
-
-		bool is_right_open() const { return right_open_; }
-
-		void set_start(const RCP<const Basic> &start) { start_ = start;}
-
-		void set_end(const RCP<const Basic> &end) { end_ = end;}
-
-		void set_left_open(bool left_open) { left_open_ = left_open; }
-
-		void set_right_open(bool right_open) { right_open_ = right_open; }
+		bool is_canonical(const mpq_class &start, const mpq_class &end, bool left_open, bool right_open) const;
 
 		void interval_union(const Interval &other, Interval &result);
 
-		void interval_intersection(const Interval &other, Interval &result);
+		static RCP<const Basic> interval_intersection(const Basic &f, const Basic &s);
 	};
 
 }
-
+/*
 inline std::ostream& operator<<(std::ostream& out, const SymEngine::Interval& A)
 {
     return out << A.__str__();
-}
+}*/
 #endif

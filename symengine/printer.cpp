@@ -68,6 +68,21 @@ void StrPrinter::bvisit(const Complex &x) {
     str_ = s.str();
 }
 
+void StrPrinter::bvisit(const Interval &x) {
+    std::ostringstream s;
+    if(x.left_open_)
+        s<<"(";
+    else
+        s<<"[";
+    s<<x.start_<<", "<<x.end_;
+    if(x.right_open_)
+        s<<")";
+    else
+        s<<"]";
+    str_ = s.str();
+}
+
+
 void StrPrinter::bvisit(const RealDouble &x) {
     std::ostringstream s;
     s.precision(std::numeric_limits< double >::digits10);

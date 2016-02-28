@@ -370,11 +370,15 @@ TEST_CASE("compare: Basic", "[basic]")
     CHECK(i2->compare(*i2) == 0);
     CHECK(i2->compare(*i3) == -1);
     CHECK(i3->compare(*i2) == 1);
-
-    Interval r3 ;
-    Interval(i2,integer(10)).interval_intersection(Interval(integer(5),integer(15)), r3);
-    std::cout<<"\n---->"<<Interval(i2,integer(10))<<" "<<Interval(integer(5),integer(15))<<" "<<r3;
-
+    RCP<const Number> i5  = integer(5);
+    RCP<const Number> i20  = integer(20);
+    
+    
+    r1 = Interval::from_nums(*im2,*i5);
+    r2 = Interval::from_nums(*i2,*i20);
+    RCP<const Basic> r3 = Interval::from_nums(*i2,*i5);
+    r3 = Interval::interval_intersection(*r1,*r2);
+    std::cout<<*r1<<" ====== "<<*r2<<" "<<*r3;
 
     r1 = mul(x, y);
     r2 = mul(x, y);
