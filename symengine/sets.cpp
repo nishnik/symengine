@@ -10,18 +10,13 @@ namespace SymEngine {
 
 	bool Interval::is_canonical(const mpq_class &start, const mpq_class &end, bool left_open, bool right_open) const {
 		if(end < start) {
-			throw std::runtime_error("Empty set not implemented yet");
+			throw std::runtime_error("Empty set not implemented");
 		}
 		else if(end == start) {
-			if(left_open || right_open)
-				throw std::runtime_error("Empty set not implemented yet");
+			if(left_open or right_open)
+				throw std::runtime_error("Empty set not implemented");
 		}
 		return true;
-
-	}
-
-	void Interval::interval_union(const Interval &second, Interval &result) {
-
 	}
 
 	std::size_t Interval::__hash__() const
@@ -51,7 +46,7 @@ namespace SymEngine {
 	int Interval::compare(const Basic &o) const {
 	    SYMENGINE_ASSERT(is_a<Interval>(o))
 	    const Interval &s = static_cast<const Interval &>(o);
-	    if ((start_ == s.start_ && end_ == s.end_) && (left_open_ == s.left_open_ && right_open_ == s.right_open_))
+	    if ((start_ == s.start_ and end_ == s.end_) and (left_open_ == s.left_open_ and right_open_ == s.right_open_))
 	        return 0;
 	    else
 	    	throw std::runtime_error("Not implemented");
@@ -83,7 +78,6 @@ namespace SymEngine {
 	    } else {
 	        throw std::runtime_error("Invalid Format: Expected Integer or Rational");
 	    }
-	
 	}
 
 	RCP<const Basic> open(const Basic &interval) {
@@ -117,7 +111,7 @@ namespace SymEngine {
 		bool left_open, right_open;
 		const Interval &first = static_cast<const Interval&>(f);
 		const Interval &second = static_cast<const Interval&>(s);
-		if((first.start_<=second.end_) && (first.end_ >= second.start_)) {
+		if((first.start_<=second.end_) and (first.end_ >= second.start_)) {
 			if(first.start_ < second.start_) {
 				start = second.start_;
 				left_open = second.left_open_;
@@ -128,7 +122,7 @@ namespace SymEngine {
 			}
 			else {
 				start = first.start_;
-				left_open = first.left_open_ || second.left_open_ ;
+				left_open = first.left_open_ or second.left_open_ ;
 			}
 
 			if(first.end_ < second.end_) {
@@ -141,15 +135,37 @@ namespace SymEngine {
 			}
 			else {
 				end = first.end_;
-				right_open = first.right_open_ || second.right_open_;
+				right_open = first.right_open_ or second.right_open_;
 			}
 			return Interval::from_mpq(start, end, left_open, right_open);
 		}
 		else {
-			throw std::runtime_error("Empty set not implemented yet");
+			throw std::runtime_error("Empty set not implemented");
 		}
 	}
 
-	
-
+	RCP<const Basic> Interval::interval_union(const Basic &f, const Basic &s) {
+		SYMENGINE_ASSERT(is_a<Interval>(f))
+		SYMENGINE_ASSERT(is_a<Interval>(s))
+		mpq_class start, end;
+		bool left_open, right_open;
+		const Interval &first = static_cast<const Interval&>(f);
+		const Interval &second = static_cast<const Interval&>(s);
+		start = std::max(first.start_, second.start_);
+		end = std::min(first.end_, second.end_);
+		if((end < start) or ((end == start) and 
+			((end == first.end_ and first.right_open_) or 
+			 (end == second.end_ and second.right_open_)))) {
+			throw std::runtime_error("not implemented");
+		}
+		else {
+			start = std::min(first.start_, second.start_);
+			end = std::max(first.end_, second.end_);
+            left_open = ((first.start_ != start or first.left_open_) and
+                             (second.start_ != start or second.left_open_));
+			right_open = ((first.end_ != end or first.right_open_) and
+                            (second.end_ != end or second.right_open_));
+			return Interval::from_mpq(start, end, left_open, right_open);
+		}
+	}
 }

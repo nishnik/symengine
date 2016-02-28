@@ -376,8 +376,8 @@ TEST_CASE("compare: Basic", "[basic]")
     
     r1 = Interval::from_nums(*im2,*i5);
     r2 = Interval::from_nums(*i2,*i20);
-    RCP<const Basic> r3 = Interval::from_nums(*i2,*i5);
-    r3 = Interval::interval_intersection(*r1,*r2);
+    RCP<const Basic> r3;
+    r3 = Interval::interval_union(*r1,*r2);
     std::cout<<*r1<<" ====== "<<*r2<<" "<<*r3;
 
     r1 = mul(x, y);
