@@ -373,12 +373,11 @@ TEST_CASE("compare: Basic", "[basic]")
     RCP<const Number> i5  = integer(5);
     RCP<const Number> i20  = integer(20);
     
-    
-    r1 = Interval::from_nums(*im2,*i5);
-    r2 = Interval::from_nums(*i2,*i20);
-    RCP<const Basic> r3;
-    r3 = Interval::interval_union(*r1,*r2);
-    std::cout<<*r1<<" ====== "<<*r2<<" "<<*r3;
+    RCP<const Interval> ra,rb,rc;
+    ra = Interval::from_nums(*im2,*i5);
+    rb = Interval::from_nums(*i2,*i20);
+    rc = ra->interval_intersection(*rb);
+    std::cout<<*ra<<" ====== "<<*rb<<" "<<*rc;
 
     r1 = mul(x, y);
     r2 = mul(x, y);

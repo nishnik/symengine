@@ -8,8 +8,12 @@ namespace SymEngine {
 			SYMENGINE_ASSERT(is_canonical(start_, end_, left_open_, right_open_));
 		}
 
-	bool Interval::is_canonical(const mpq_class &start, const mpq_class &end, bool left_open, bool right_open) const {
-		if(end < start) {
+	bool Interval::is_canonical(const mpq_class &s, const mpq_class &e, bool left_open, bool right_open) const {
+		mpq_class start = s;
+		mpq_class end = e;
+		start.canonicalize();
+		end.canonicalize();
+    	if(end < start) {
 			throw std::runtime_error("Empty set not implemented");
 		}
 		else if(end == start) {
@@ -19,11 +23,8 @@ namespace SymEngine {
 		return true;
 	}
 
-	std::size_t Interval::__hash__() const
-	{
-	    // only the least significant bits that fit into "signed long int" are
-	    // hashed:
-	    std::size_t seed = COMPLEX;
+	std::size_t Interval::__hash__() const {
+	    std::size_t seed = INTERVAL;
 	    hash_combine<long long int>(seed, this->start_.get_num().get_si());
 	    hash_combine<long long int>(seed, this->start_.get_den().get_si());
 	    hash_combine<long long int>(seed, this->end_.get_num().get_si());
@@ -33,8 +34,7 @@ namespace SymEngine {
 	    return seed;
 	}
 
-	bool Interval::__eq__(const Basic &o) const
-	{
+	bool Interval::__eq__(const Basic &o) const	{
 	    if (is_a<Interval>(o)) {
 	        const Interval &s = static_cast<const Interval &>(o);
 	        return (((this->start_ == s.start_) and (this->end_ == s.end_)) and
@@ -52,12 +52,12 @@ namespace SymEngine {
 	    	throw std::runtime_error("Not implemented");
 	}
 
-	RCP<const Basic> Interval::from_mpq(const mpq_class start, const mpq_class end, const bool left_open, const bool right_open)
+	RCP<const Interval> Interval::from_mpq(const mpq_class start, const mpq_class end, const bool left_open, const bool right_open)
 	{
 	    return make_rcp<const Interval>(start, end, left_open, right_open);
 	}
 
-	RCP<const Basic> Interval::from_nums(const Basic &start, const Basic &end, const bool left_open, const bool right_open)
+	RCP<const Interval> Interval::from_nums(const Basic &start, const Basic &end, const bool left_open, const bool right_open)
 	{
 	    if (is_a<Integer>(start) and is_a<Integer>(end)) {
 	        mpq_class start_mpq(static_cast<const Integer&>(start).i, static_cast<const Integer&>(*one).i);
@@ -80,62 +80,52 @@ namespace SymEngine {
 	    }
 	}
 
-	RCP<const Basic> open(const Basic &interval) {
-		SYMENGINE_ASSERT(is_a<Interval>(interval))
-		const Interval &i = static_cast<const Interval&>(interval);
-		return Interval::from_mpq(i.start_, i.end_, true, true);
+	RCP<const Interval> Interval::open() const {
+		return Interval::from_mpq(start_, end_, true, true);
 	}
 
-	RCP<const Basic> Lopen(const Basic &interval) {
-		SYMENGINE_ASSERT(is_a<Interval>(interval))
-		const Interval &i = static_cast<const Interval&>(interval);
-		return Interval::from_mpq(i.start_, i.end_, true, false);
+	RCP<const Interval> Interval::Lopen() const {
+		return Interval::from_mpq(start_, end_, true, false);
 	}
 
-	RCP<const Basic> Ropen(const Basic &interval) {
-		SYMENGINE_ASSERT(is_a<Interval>(interval))
-		const Interval &i = static_cast<const Interval&>(interval);
-		return Interval::from_mpq(i.start_, i.end_, false, true);
+	RCP<const Interval> Interval::Ropen() const {
+		return Interval::from_mpq(start_, end_, false, true);
 	}
 
-	RCP<const Basic> close(const Basic &interval) {
-		SYMENGINE_ASSERT(is_a<Interval>(interval))
-		const Interval &i = static_cast<const Interval&>(interval);
-		return Interval::from_mpq(i.start_, i.end_, false, false);
+	RCP<const Interval> Interval::close() const {
+		return Interval::from_mpq(start_, end_, false, false);
 	}
 
-	RCP<const Basic> Interval::interval_intersection(const Basic &f,const Basic &s) {
-		SYMENGINE_ASSERT(is_a<Interval>(f))
+	RCP<const Interval> Interval::interval_intersection(const Basic &s) const {
 		SYMENGINE_ASSERT(is_a<Interval>(s))
 		mpq_class start, end;
 		bool left_open, right_open;
-		const Interval &first = static_cast<const Interval&>(f);
 		const Interval &second = static_cast<const Interval&>(s);
-		if((first.start_<=second.end_) and (first.end_ >= second.start_)) {
-			if(first.start_ < second.start_) {
+		if((this->start_<=second.end_) and (this->end_ >= second.start_)) {
+			if(this->start_ < second.start_) {
 				start = second.start_;
 				left_open = second.left_open_;
 			}
-			else if(first.start_ > second.start_) {
-				start = first.start_;
-				left_open = first.left_open_;
+			else if(this->start_ > second.start_) {
+				start = this->start_;
+				left_open = this->left_open_;
 			}
 			else {
-				start = first.start_;
-				left_open = first.left_open_ or second.left_open_ ;
+				start = this->start_;
+				left_open = this->left_open_ or second.left_open_ ;
 			}
 
-			if(first.end_ < second.end_) {
-				end = first.end_;
-				right_open = first.right_open_;
+			if(this->end_ < second.end_) {
+				end = this->end_;
+				right_open = this->right_open_;
 			}
-			else if(first.end_ > second.end_) {
+			else if(this->end_ > second.end_) {
 				end = second.end_;
 				right_open = second.right_open_;
 			}
 			else {
-				end = first.end_;
-				right_open = first.right_open_ or second.right_open_;
+				end = this->end_;
+				right_open = this->right_open_ or second.right_open_;
 			}
 			return Interval::from_mpq(start, end, left_open, right_open);
 		}
@@ -144,26 +134,24 @@ namespace SymEngine {
 		}
 	}
 
-	RCP<const Basic> Interval::interval_union(const Basic &f, const Basic &s) {
-		SYMENGINE_ASSERT(is_a<Interval>(f))
+	RCP<const Interval> Interval::interval_union(const Basic &s) const {
 		SYMENGINE_ASSERT(is_a<Interval>(s))
 		mpq_class start, end;
 		bool left_open, right_open;
-		const Interval &first = static_cast<const Interval&>(f);
 		const Interval &second = static_cast<const Interval&>(s);
-		start = std::max(first.start_, second.start_);
-		end = std::min(first.end_, second.end_);
+		start = std::max(this->start_, second.start_);
+		end = std::min(this->end_, second.end_);
 		if((end < start) or ((end == start) and 
-			((end == first.end_ and first.right_open_) or 
+			((end == this->end_ and this->right_open_) or 
 			 (end == second.end_ and second.right_open_)))) {
 			throw std::runtime_error("not implemented");
 		}
 		else {
-			start = std::min(first.start_, second.start_);
-			end = std::max(first.end_, second.end_);
-            left_open = ((first.start_ != start or first.left_open_) and
+			start = std::min(this->start_, second.start_);
+			end = std::max(this->end_, second.end_);
+            left_open = ((this->start_ != start or this->left_open_) and
                              (second.start_ != start or second.left_open_));
-			right_open = ((first.end_ != end or first.right_open_) and
+			right_open = ((this->end_ != end or this->right_open_) and
                             (second.end_ != end or second.right_open_));
 			return Interval::from_mpq(start, end, left_open, right_open);
 		}

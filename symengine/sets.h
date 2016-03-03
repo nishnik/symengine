@@ -29,24 +29,25 @@ class Interval : public Basic  {
 
 		Interval(mpq_class real, mpq_class end, bool left_open = false, bool right_open = false);
 		
-		static RCP<const Basic> from_mpq(const mpq_class start, const mpq_class end, const bool left_open = false, const bool right_open = false);
+		static RCP<const Interval> from_mpq(const mpq_class start, const mpq_class end, const bool left_open = false, const bool right_open = false);
     	
-    	static RCP<const Basic> from_nums(const Basic &start, const Basic &end,  const bool left_open = false, const bool right_open = false);
+    	static RCP<const Interval> from_nums(const Basic &start, const Basic &end,  const bool left_open = false, const bool right_open = false);
 
-		static RCP<const Basic> open(const Basic &interval);
+		RCP<const Interval> open() const;
     	
-    	static RCP<const Basic> close(const Basic &interval);
+    	RCP<const Interval> close() const;
     	
-    	static RCP<const Basic> Lopen(const Basic &interval);
+    	RCP<const Interval> Lopen() const;
     	
-    	static RCP<const Basic> Ropen(const Basic &interval);
+    	RCP<const Interval> Ropen() const;
     	
 		bool is_canonical(const mpq_class &start, const mpq_class &end, bool left_open, bool right_open) const;
 
-		static RCP<const Basic> interval_union(const Basic &f, const Basic &s);
+		RCP<const Interval> interval_union(const Basic &s) const;
 
-		static RCP<const Basic> interval_intersection(const Basic &f, const Basic &s);
+		RCP<const Interval> interval_intersection(const Basic &s) const;
 	};
+
 //! Canonicalize Interval:
 RCP<const Basic> interval(const RCP<const Basic> &arg);
 
