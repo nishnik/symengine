@@ -655,7 +655,7 @@ TEST_CASE("GaloisFieldDict equal degree factorization : Basic", "[basic]")
     REQUIRE(f.size() == 2);
     REQUIRE(f[0] == GaloisFieldDict::from_vec({1_z, 0_z, 1_z}, 3_z));
     REQUIRE(f[1] == GaloisFieldDict::from_vec({2_z, 1_z, 1_z}, 3_z));
-
+    REQUIRE(f == d1.gf_edf_shoup(2_z));
     d1 = GaloisFieldDict::from_vec({}, 11_z);
     f = d1.gf_zassenhaus();
     REQUIRE(f.size() == 0);
