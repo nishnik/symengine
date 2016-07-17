@@ -677,6 +677,24 @@ std::vector<GaloisFieldDict> GaloisFieldDict::gf_zassenhaus() const
     return factors;
 }
 
+std::vector<GaloisFieldDict> GaloisFieldDict::gf_shoup() const
+{
+    std::vector<GaloisFieldDict> factors;
+    auto temp1 = gf_ddf_shoup();
+    for (auto &f : temp1) {
+        std::vector<GaloisFieldDict> temp2 = f.first.gf_edf_shoup(f.second);
+        factors.insert(factors.end(), temp2.begin(), temp2.end());
+    }
+    sort(factors.begin(), factors.end(),
+         [](const GaloisFieldDict &a, const GaloisFieldDict &b) {
+             if (a.degree() == b.degree())
+                 return a.dict_ < b.dict_;
+             else
+                 return a.degree() < b.degree();
+         });
+    return factors;
+}
+
 std::vector<std::pair<GaloisFieldDict, integer_class>>
 GaloisFieldDict::gf_ddf_shoup() const
 {

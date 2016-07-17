@@ -133,6 +133,7 @@ public:
     //     2.) K. Geddes, S. R. Czapor, G. Labahn, Algorithms for Computer
     //     Algebra, 1992
     std::vector<GaloisFieldDict> gf_zassenhaus() const;
+    std::vector<GaloisFieldDict> gf_shoup() const;
     // For a monic square-free polynomial in modulo_, it returns its distinct
     // degree factorization. Each element's first is a factor and second
     // is used by equal degree factorization. (Shoup's algorithm)
