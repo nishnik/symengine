@@ -140,7 +140,8 @@ public:
     //! \return size of the hash
     std::size_t __hash__() const;
     std::set<RCP<const UIntPoly>, RCPBasicKeyLess> zz_zassenhaus() const;
-    std::pair<integer_class, std::set<RCP<const UIntPoly>, RCPBasicKeyLess>> zz_factor_sqf() const;
+    std::pair<integer_class, std::set<RCP<const UIntPoly>, RCPBasicKeyLess>>
+    zz_factor_sqf() const;
 }; // UIntPoly
 
 // Divides a polynomial in integer domain
