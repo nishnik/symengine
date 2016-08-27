@@ -33,27 +33,32 @@ using SymEngine::set_boolean;
 
 TEST_CASE("BooleanAtom : Basic", "[basic]")
 {
+    std::cout<<"\nchk1";
     REQUIRE(boolTrue->__str__() == "True");
     REQUIRE(boolFalse->__str__() == "False");
 
     vec_basic v = boolTrue->get_args();
     vec_basic u;
+    std::cout<<"\nchk2";
     REQUIRE(unified_eq(v, u));
 
     auto x = symbol("x");
+    std::cout<<"\nchk3";
     CHECK_THROWS_AS(boolTrue->diff(x), SymEngineException);
 
     REQUIRE(not eq(*boolTrue, *boolFalse));
     REQUIRE(eq(*boolFalse, *boolean(false)));
+    std::cout<<"\nchk4";
 }
 
 TEST_CASE("Contains", "[logic]")
 {
+    std::cout<<"\nchk5";
     auto x = symbol("x");
     auto y = symbol("y");
     auto int1 = interval(integer(1), integer(2), false, false);
     auto int2 = interval(integer(1), integer(2), true, true);
-
+    std::cout<<"\nchk6";
     auto p = contains(integer(1), int2);
     REQUIRE(eq(*p, *boolFalse));
 
@@ -62,7 +67,7 @@ TEST_CASE("Contains", "[logic]")
 
     p = contains(integer(1), int1);
     REQUIRE(eq(*p, *boolTrue));
-
+    std::cout<<"\nchk7";
     p = contains(integer(2), int1);
     REQUIRE(eq(*p, *boolTrue));
 
@@ -71,7 +76,7 @@ TEST_CASE("Contains", "[logic]")
 
     p = contains(integer(3), int1);
     REQUIRE(eq(*p, *boolFalse));
-
+    std::cout<<"\nchk8";
     p = contains(x, int1);
     REQUIRE(is_a<Contains>(*p));
     REQUIRE(p->__str__() == "Contains(x, [1, 2])");
@@ -82,10 +87,12 @@ TEST_CASE("Contains", "[logic]")
     REQUIRE(unified_eq(v, u));
 
     CHECK_THROWS_AS(p->diff(x), SymEngineException);
+    std::cout<<"\nchk9";
 }
 
 TEST_CASE("Piecewise", "[logic]")
 {
+    std::cout<<"\nchk10";
     auto x = symbol("x");
     auto y = symbol("y");
     auto int1 = interval(integer(1), integer(2), true, false);
@@ -94,7 +101,7 @@ TEST_CASE("Piecewise", "[logic]")
     auto p = piecewise({{x, contains(x, int1)},
                         {y, contains(x, int2)},
                         {add(x, y), contains(x, int3)}});
-
+    std::cout<<"\nchk11";
     std::string s = "Piecewise((x, Contains(x, (1, 2])), (y, Contains(x, (2, "
                     "5])), (x + y, Contains(x, (5, 10])))";
     REQUIRE(s == p->__str__());
@@ -104,10 +111,12 @@ TEST_CASE("Piecewise", "[logic]")
                         {one, contains(x, int3)}});
 
     REQUIRE(eq(*p->diff(x), *q));
+    std::cout<<"\nchk12";
 }
 
 TEST_CASE("And, Or : Basic", "[basic]")
 {
+    std::cout<<"\nchk13";
     set_boolean e;
     REQUIRE(eq(*logical_and(e), *boolTrue));
     REQUIRE(eq(*logical_or(e), *boolFalse));
@@ -116,7 +125,7 @@ TEST_CASE("And, Or : Basic", "[basic]")
     REQUIRE(eq(*logical_and({boolFalse}), *boolFalse));
     REQUIRE(eq(*logical_or({boolTrue}), *boolTrue));
     REQUIRE(eq(*logical_or({boolFalse}), *boolFalse));
-
+    std::cout<<"\nchk14";
     REQUIRE(eq(*logical_and({boolTrue, boolFalse}), *boolFalse));
     REQUIRE(eq(*logical_or({boolTrue, boolFalse}), *boolTrue));
 
@@ -125,7 +134,7 @@ TEST_CASE("And, Or : Basic", "[basic]")
     auto int2 = interval(integer(1), integer(5), false, false);
     auto c1 = contains(x, int1);
     auto c2 = contains(x, int2);
-
+    std::cout<<"\nchk15";
     auto s1 = logical_and({c1, c2});
     std::string str = s1->__str__();
     REQUIRE(str.find("And(") == 0);
@@ -142,7 +151,7 @@ TEST_CASE("And, Or : Basic", "[basic]")
     s2 = logical_or({c2, c1});
     REQUIRE(s1->__hash__() == s2->__hash__());
     REQUIRE(eq(*s1, *s2));
-
+    std::cout<<"\nchk16";
     REQUIRE(eq(*logical_and({c1}), *c1));
     REQUIRE(eq(*logical_or({c1}), *c1));
 
@@ -153,7 +162,7 @@ TEST_CASE("And, Or : Basic", "[basic]")
     REQUIRE(eq(*logical_and({c1, boolFalse}), *boolFalse));
     REQUIRE(eq(*logical_or({c1, boolTrue}), *boolTrue));
     REQUIRE(eq(*logical_or({c1, boolFalse}), *c1));
-
+    std::cout<<"\nchk17";
     REQUIRE(eq(*logical_and({c1, c1, c2}), *logical_and({c1, c2})));
     REQUIRE(eq(*logical_or({c1, c1, c2}), *logical_or({c1, c2})));
 
@@ -174,10 +183,12 @@ TEST_CASE("And, Or : Basic", "[basic]")
         *logical_or({c1, logical_and({c2, c3, c4}), logical_and({c2, c4}),
                      logical_and({c2, c3, c4}), c1, logical_and({c2, c4})}),
         *logical_or({c1, logical_and({c2, c3, c4}), logical_and({c2, c4})})));
+    std::cout<<"\nchk18";
 }
 
 TEST_CASE("Not : Basic", "[basic]")
 {
+    std::cout<<"\nchk19";
     auto x = symbol("x");
     auto int1 = interval(integer(1), integer(2), false, false);
     auto int2 = interval(integer(1), integer(5), false, false);
@@ -191,4 +202,5 @@ TEST_CASE("Not : Basic", "[basic]")
                *logical_or({logical_not(c1), logical_not(c2)})));
     REQUIRE(eq(*logical_not(logical_or({c1, c2})),
                *logical_and({logical_not(c1), logical_not(c2)})));
+    std::cout<<"\nchk20";
 }
